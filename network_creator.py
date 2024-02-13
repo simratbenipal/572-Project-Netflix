@@ -5,7 +5,7 @@ from util import outputDataAsJSON, parseData, createHTMLGraph
 # CSV --> JSON --> nx.Graph --> visualization
 
 INPUT_CSV_PATH = 'data/netflix_titles.csv'
-JSON_OUTPUT_PATH = 'clean_data.json'
+JSON_OUTPUT_PATH = 'output/clean_data.json'
 
 
 # Parse input CSV and output clean data to JSON file (CSV --> JSON)
@@ -39,7 +39,7 @@ for i, entry in enumerate(clean_data):
             G.add_edge(entry['title'], cast_member)
 
 # Browser rendered graph
-# createHTMLGraph(G, 'network.html')
+# createHTMLGraph(G, 'output/network.html')
 
 # GEXF keeps all attributes, render in Gephi
-nx.write_gexf(G, 'network.gexf')
+nx.write_gexf(G, 'output/network.gexf')
