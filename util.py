@@ -1,5 +1,6 @@
 import json
 import csv
+import random
 import networkx as nx
 from pyvis.network import Network
 
@@ -53,6 +54,42 @@ def outputDataAsJSON(output_path: str, data: list) -> None:
             jsonfile.write(',' if i < len(data) - 1 else '')
 
         jsonfile.write('\n]')
+
+
+def createGraph(data: list[dict[str, str]], weights: list[list[int]]) -> list[nx.Graph]:
+    """
+    Create a GEXF file for each of the given probability distributions
+
+    NOTE: edges between directors and cast would make network tripartite
+    NOTE: nodes are unique only by name, someone that's been cast and director
+      keeps last role to be processed
+    """
+    outcomes: list = ['IN', 'OUT']
+    created_graphs: list = []
+
+    for prob in weights:
+        G = nx.Graph()
+
+        for entry in data:
+            G.add_node(entry['title'], type='movie')
+
+            # Add director nodes and movie-director edges
+            for director in entry['director'].split(', '):
+                if director != '' and random.choices(outcomes, prob, k=1)[0] == 'IN':
+                    G.add_node(director, type='director')
+                    G.add_edge(entry['title'], director)
+
+            # Add cast nodes and movie-cast edges
+            for cast_member in entry['cast'].split(', '):
+                if cast_member != '' and random.choices(outcomes, prob, k=1)[0] == 'IN':
+                    G.add_node(cast_member, type='cast')
+                    G.add_edge(entry['title'], cast_member)
+
+        # GEXF keeps all attributes, render file in Gephi
+        nx.write_gexf(G, f'output/network_{prob[0]}%.gexf')
+        created_graphs.append(G)
+
+    return created_graphs
 
 
 def createHTMLGraph(G: nx.Graph, graph_name: str) -> None:
