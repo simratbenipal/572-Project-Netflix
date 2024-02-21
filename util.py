@@ -12,7 +12,7 @@ def parseData(input_csv_path: str) -> list[dict[str, str]]:
     clean_data: list[dict[str, str]] = []
     tv_show_counter: int = 0
 
-    with open(input_csv_path, newline='') as csvfile:
+    with open(input_csv_path, newline='', encoding='utf-8') as csvfile:
         # DictReader converts each row into a dict using header values as keys
         csvreader = csv.DictReader(csvfile)
 
@@ -27,6 +27,13 @@ def parseData(input_csv_path: str) -> list[dict[str, str]]:
             # Delete unnecessary fields
             for key in fields_to_delete:
                 del row[key]
+
+            if row['director'] == '':
+                continue
+
+            if row['cast'] == '':
+                continue
+
 
             clean_data.append(row)
 
